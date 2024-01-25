@@ -6,6 +6,7 @@ from starlette import status
 import models
 from models import Todos
 from database import engine, SessionLocal
+from routers import auth
 import uvicorn
 
 
@@ -14,6 +15,9 @@ app = FastAPI()
 
 
 models.Base.metadata.create_all(bind=engine)
+
+
+app.include_router(auth.router)
 
 
 def get_db():
