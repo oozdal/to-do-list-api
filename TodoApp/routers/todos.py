@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from starlette import status
 from models import Todos
 from database import SessionLocal
+from .auth import get_current_user
 
 
 # Create FastAPI object
@@ -20,6 +21,7 @@ def get_db():
 
 
 dp_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 class TodoRequest(BaseModel):
@@ -43,8 +45,12 @@ async def read_todo(db: dp_dependency, todo_id: int = Path(gt=0)):
 
 
 @router.post("/todo", status_code=status.HTTP_201_CREATED)
-async def create_todo(db: dp_dependency, todo_request: TodoRequest):
-    todo_model = Todos(**todo_request.dict())
+async def create_todo(user: user_dependency, db: dp_dependency, 
+                      todo_request: TodoRequest):
+    
+    if user is None:
+        raise HTTPException(status_code=401, details='Authentication Failed')
+    todo_model = Todos(**todo_request.dict(), owner_id=user.get('id'))
     
     db.add(todo_model)
     db.commit()
