@@ -1,12 +1,12 @@
 
 body {
-    background: #fafafa;
+    background: black;
     color: #33333a;
     padding-top: 70px;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    color: #323232;
+    color: red;
   }
   
   .main-color {
