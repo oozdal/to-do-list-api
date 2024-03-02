@@ -35,7 +35,7 @@ def get_db():
 
 @router.get("/test")
 async def test(request: Request):
-    return templates.TemplateResponse("edit-todo.html", {"request": request})
+    return templates.TemplateResponse("login.html", {"request": request})
 
 
 @router.get("/", response_class=HTMLResponse)
