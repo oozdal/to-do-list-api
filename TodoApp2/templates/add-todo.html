@@ -6,18 +6,20 @@
             Make a new todo
         </div>
         <div class="card-body">
-            <form>
+            <form method="POST">
                 <div class="form-group">
                     <label>Title</label>
-                    <input type="text" class="form-control" name="title" required>
-                </div> 
-                <div class="from-group">
+                    <input type="text" class="form-control" name="title"
+                           required>
+                </div>
+                <div class="form-group">
                     <label>Description</label>
-                    <textarea name="description" class="form-control" rows="3" required></textarea>
+                    <textarea class="form-control"rows="3" name="description"
+                              required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Priority</label>
-                    <select name="Priority" class="form-control">
+                    <select class="form-control" name="priority">
                         <option>1</option>
                         <option>2</option>
                         <option>3</option>
@@ -25,7 +27,7 @@
                         <option>5</option>
                     </select>
                 </div>
-                <button type="submit class="btn btn-primary>Add new todo</button>
+                <button type="submit" class="btn btn-primary">Add new todo</button>
             </form>
         </div>
     </div>
