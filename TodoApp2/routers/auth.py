@@ -98,7 +98,7 @@ async def get_current_user(request: Request):
         username: str = payload.get("sub")
         user_id: int = payload.get("id")
         if username is None or user_id is None:
-            logout(request)
+            None #logout(request)
         return {"username": username, "id": user_id}
     except JWTError:
         raise HTTPException(status_code=404, detail="Not found")
@@ -185,3 +185,5 @@ async def register_user(request: Request, email: str = Form(...), username: str 
 
     msg = "User successfully created"
     return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
+
+

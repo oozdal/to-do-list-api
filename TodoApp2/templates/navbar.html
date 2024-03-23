@@ -6,11 +6,21 @@
             <span class="navbar-toggler-icon"> </span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ui class="navbar-nav">
+            <ul class="navbar-nav">
+                {% if user %}
                 <li class="nav-item active">
                     <a class=""nav-link href="#"> Home </a>
                 </li> 
-            </ui>
+                {% endif %}
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                {% if user %}
+                <li class="nav-item m-1">
+                    <a type="button" class="btn btn-outline-light" href="/auth/logout">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
         </div>
     </nav>
 </div>

@@ -5,10 +5,24 @@
         Login
     </div>
     <div class="card-body">
-        <form>
+
+        {% if msg %}
+        {% if msg == 'Logout Sucessful' or msg == 'User suceessfully created' %}
+        <div class="alert alert-success" role="alert">
+            {{msg}}
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            {{msg}}
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <form method="POST" action="/auth">
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" class="form-group" name="email" required>
+                <input type="text" class="form-control" 
+                       name="email" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
@@ -18,6 +32,13 @@
         </form>
     </div>
     <div class="card-footer text-muted">
-        <a href="#">Register?</a>
+        <a href="register">Register? </a>
     </div>
 </div>
+
+
+<script src="{{ url_for('static', path='/todo/js/jquery-slim.js') }}"></script>
+<script src="{{ url_for('static', path='/todo/js/popper.js') }}"></script>
+<script src="{{ url_for('static', path='/todo/js/bootstrap.js') }}"></script>
+</body>
+</html>
