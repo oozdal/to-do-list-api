@@ -1,0 +1,80 @@
+# Building and Pushing Container Images to ReadHat Quay.io
+
+name: redhat-quay-workflow
+
+on:
+  push:
+    tags:
+      - '*'
+    branches: none
+  pull_request:
+    branches: [ main ]
+    types:
+      - closed
+
+#  schedule:
+#    - cron: '0 1 * * 0' # Run every Sunday at 01:00
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  CACHE_NUMBER: 1  # increase to reset cache manually
+  IMAGE_NAME: todolistapp
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            label: Build and Push to ReadHat Quay
+            
+    # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-WeekNo%U')"
+
+      - name: Get image tags
+        id: image_tags
+        run: |
+          echo -n ::set-output name=IMAGE_TAGS::
+          VERSION=$(jq -r '.version' ${context}/version.json)
+          TAGS=('latest')
+          if [ "${VERSION}" ] && [ "${VERSION}" != "latest" ]; then
+              TAGS+=("${VERSION}")
+          fi
+          if [[ "${GITHUB_REF}" =~ refs/tags/(.*) ]]; then
+              TAGS+=("git-${BASH_REMATCH[1]}")
+          fi
+          ( IFS=$','; echo "${TAGS[*]}" )
+          
+      - name: Docker quay.io Login
+        env:
+          DOCKER_USER: ${{secrets.REGISTRY_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.REGISTRY_PASSWORD}}
+        run: |
+          docker login quay.io -u $DOCKER_USER -p $DOCKER_PASSWORD
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./TodoApp2/Dockerfile
+          push: true
+          tags: quay.io/ozerozdal/${{ env.IMAGE_NAME }}:${{ steps.image_tags.outputs.IMAGE_TAGS }}
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
+          
