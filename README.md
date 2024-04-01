@@ -2,14 +2,6 @@
 
 This project is a Todo List application built using FastAPI and SQLAlchemy. The goal of this project is to improve my FastAPI and fullstack development skills by following a Udemy FastAPI course: https://www.udemy.com/course/fastapi-the-complete-course/?couponCode=KEEPLEARNING
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Introduction
 
 This project is part of my journey with FastAPI, a modern, fast (high-performance), web framework for building APIs with Python. It includes basic CRUD operations (Create, Read, Update, Delete) for managing Todo items.
@@ -19,9 +11,13 @@ This project is part of my journey with FastAPI, a modern, fast (high-performanc
 - Create, Read, Update, and Delete Todo items.
 - RESTful API endpoints for interacting with Todo items.
 - Database integration for persistent storage.
-- Authentication and authorization
+- Authentication and authorization.
 
-## Installation
+## Usage & Deployment
+
+The application is deployed and accessible at: [To-Do List App](https://to-do-list-api-0o37.onrender.com)
+
+## Installation & Contribution
 
 To run this project locally, follow these steps:
 
