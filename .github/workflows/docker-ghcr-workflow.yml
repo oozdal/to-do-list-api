@@ -1,0 +1,94 @@
+# Building and Pushing Container Images to GitHub Container Registry
+
+name: docker-ghcr-workflow
+
+on:
+  push:
+    tags:
+      - '*'
+    branches: none
+  pull_request:
+    branches: [ main ]
+    types:
+      - closed
+
+#  schedule:
+#    - cron: '0 1 * * 0' # Run every Sunday at 01:00
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  CACHE_NUMBER: 1  # increase to reset cache manually
+  IMAGE_NAME: todolistapp
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            label: Build and Push to GHCR
+            
+    # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    steps:
+        # Clean unnecessary files to save disk space
+        - name: clean unncessary files to save space
+          run: |
+            docker rmi `docker images -q`
+            sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/sudo apt/sources.list.d
+            sudo apt -y autoremove --purge
+            sudo apt -y autoclean
+            sudo apt clean
+            rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+            df -h          
+  
+        # Free up disk space on Ubuntu
+        - name: Free Disk Space (Ubuntu)
+          uses: jlumbroso/free-disk-space@main
+          with:
+            # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
+            tool-cache: false
+            large-packages: true
+            swap-storage: true
+  
+        # Checkout the repository
+        - name: Checkout
+          uses: actions/checkout@v2
+
+        - name: Set date
+          id: date
+          run: echo "::set-output name=date::$(date +'%Y-WeekNo%U')"
+
+        - name: Get tag
+          id: repository
+          run: echo "tag=$(git describe --tags --always)" > $GITHUB_ENV
+
+        - name: Log into the Container registry
+          uses: docker/login-action@v2
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v1
+        
+        - name: Build and push
+          uses: docker/build-push-action@v2
+          with:
+            context: .
+            file: ./Dockerfile
+            push: true
+            #tags: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.tag }}
+            #tags: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.date.outputs.date }}
+            tags: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            cache-from: type=gha
+            cache-to: type=gha, mode=max
+            
