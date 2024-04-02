@@ -21,9 +21,8 @@ import os
 
 load_dotenv()
 
-
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = os.getenv('ALGORITHM')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+ALGORITHM = os.environ.get('ALGORITHM')
 
 templates = Jinja2Templates(directory="templates")
 
