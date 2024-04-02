@@ -12,6 +12,9 @@ models.Base.metadata.create_all(bind=engine)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/health", status_code=status.HTTP_200_OK)
+def health_check():
+    return {'status': 'Healthy'}
 
 @app.get("/")
 async def root():
