@@ -4,7 +4,6 @@ sys.path.append("..")
 from starlette.responses import RedirectResponse
 
 from fastapi import Depends, HTTPException, status, APIRouter, Request, Response, Form
-from pydantic import BaseModel
 from typing import Optional
 import models
 from passlib.context import CryptContext
