@@ -17,11 +17,13 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 import os
+import smtplib
+from email.message import EmailMessage
 
 load_dotenv()
 
-SECRET_KEY = '11feda51e2572e6d288c0e7caa86d434bc874d939156549aae7efdbaf537686b' # os.environ.get('SECRET_KEY')
-ALGORITHM = 'HS256' # os.environ.get('ALGORITHM')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+ALGORITHM = os.environ.get('ALGORITHM')
 
 templates = Jinja2Templates(directory="templates")
 
@@ -185,7 +187,29 @@ async def register_user(request: Request, email: str = Form(...), username: str 
     db.add(user_model)
     db.commit()
 
-    msg = "User successfully created"
-    return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
+    # Send Welcome Email
+    email_address = os.environ.get('email_address')
+    email_password = os.environ.get('email_password') # If you do not have a gmail apps password, create a new app with using generate password. Check your apps and passwords https://myaccount.google.com/apppasswords
+ 
+    # create email
+    msg = EmailMessage()
+    msg['Subject'] = "Welcome to TodoList App!"
+    msg['From'] = email_address
+    msg['To'] = user_model.email
+    msg.set_content(
+       f"""\
+    Dear {user_model.first_name}, 
+    
+    Welcome to TodoList App! / Bienvenue dans l'application TodoList App! / Hosgeldiniz!
+    
+    """,
+    )
 
+    # send email
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(email_address, email_password)
+        smtp.send_message(msg)
+
+    msg = "User successfully created and email successfully sent"
+    return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
 
