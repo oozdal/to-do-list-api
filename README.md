@@ -17,6 +17,10 @@ This project is part of my journey with FastAPI, a modern, fast (high-performanc
 
 The application is deployed and accessible at: [To-Do List App](https://to-do-list-api-0o37.onrender.com)
 
+Warning: Free Instance Spin-Down Delay
+
+Please note that the free instance provided by Render may experience spin-down due to inactivity. This could result in delays of 50 seconds or more when processing requests. Please be patient while your web browser tries to load the page.
+
 ## Installation & Contribution
 
 To run this project locally, follow these steps:
