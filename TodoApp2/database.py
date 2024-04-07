@@ -6,16 +6,15 @@ import os
 
 load_dotenv()
 
-
+# SQLite Series
 #SQLALCHEMY_DATABASE_URL = "sqlite:///./todos.db"
-
-# MYSQL Series
-# "mysql+pymysql://root:test1234!@127.0.0.1:3306/todoapp"
-SQLALCHEMY_DATABASE_URL = "postgresql://ynlbybcp:6lHNxuOZ8Ymf-yzqLNtxysru0L8YWk0M@drona.db.elephantsql.com/ynlbybcp" # os.getenv('SQLALCHEMY_DATABASE_URL')
 
 #engine = create_engine(
 #    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 #)
+
+# MYSQL or PostgreSQL Series
+SQLALCHEMY_DATABASE_URL = os.getenv('SQLALCHEMY_DATABASE_URL')
 
 # MYSQL or PostgreSQL Series
 engine = create_engine(
