@@ -70,9 +70,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./TodoApp2/Dockerfile
           push: true
-          tags: ozerozdal/pdfbundle:latest
+          tags: ${{ env.docker_image }}:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
           build-args: |
             AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
