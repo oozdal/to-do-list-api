@@ -72,10 +72,6 @@ jobs:
           context: .
           file: ./TodoApp2/Dockerfile
           push: true
-          tags: ${{ env.docker_image }}:latest
+          tags: ozerozdal/todolist-app:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
-          build-args: |
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_REGION=${{ secrets.AWS_REGION }}
     
