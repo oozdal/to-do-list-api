@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 import os
 import smtplib
 from email.message import EmailMessage
+import boto3
 
 load_dotenv()
 
@@ -210,6 +211,7 @@ async def register_user(request: Request, email: str = Form(...), username: str 
         smtp.login(email_address, email_password)
         smtp.send_message(msg)
 
-    msg = "User successfully created and email successfully sent"
+    msg = "User successfully created"
+
     return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
 
