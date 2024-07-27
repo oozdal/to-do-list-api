@@ -1,14 +1,17 @@
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
-# Set the working directory in the container
-WORKDIR /TodoList2
+# Set the working directory
+WORKDIR /app
 
-# Copy the current directory contents into the container at /TodoList2
-COPY . /TodoList2
+# Copy requirements.txt from TodoList2
+COPY TodoList2/requirements.txt /app/requirements.txt
 
-# Install any needed dependencies specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy the rest of the application
+COPY . /app
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
