@@ -1,7 +1,0 @@
-[build]
-  # Install dependencies and build the app
-  command = "pip install -r TodoApp2/requirements.txt"
-
-[deploy]
-  # Set the directory where the app code is located
-  directory = "TodoApp2"
