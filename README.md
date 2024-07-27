@@ -15,7 +15,7 @@ This project is part of my journey with FastAPI, a modern, fast (high-performanc
 
 ## Usage & Deployment
 
-The application is deployed and accessible at: [To-Do List App](https://to-do-list-api-0o37.onrender.com/auth/)
+To-Do List App is deployed and accessible at: [Render](https://to-do-list-api-0o37.onrender.com/auth/) and [Railway](https://to-do-list-api-production-29ce.up.railway.app)
 
 Warning: Free Instance Spin-Down Delay
 
