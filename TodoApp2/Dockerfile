@@ -1,10 +1,11 @@
 # Use an official Python runtime as a parent image
-FROM python:3.10
+FROM python:3.10-slim
 
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /TodoList2
 
-# Copy TodoApp2 directory contents into the container 
-COPY /TodoApp2 .
+# Copy the current directory contents into the container at /TodoList2
+COPY . /TodoList2
 
 # Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt

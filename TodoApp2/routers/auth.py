@@ -19,7 +19,6 @@ from dotenv import load_dotenv
 import os
 import smtplib
 from email.message import EmailMessage
-import boto3
 
 load_dotenv()
 
