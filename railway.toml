@@ -1,10 +1,7 @@
 [build]
-  builder = "Nixpacks"
-  build_command = "cd TodoApp2 && nixpacks build" # Navigates to TodoApp2 directory and builds it
+  # Install dependencies and build the app
+  command = "pip install -r TodoApp2/requirements.txt"
 
 [deploy]
-  start_command = "uvicorn main:app --host 0.0.0.0 --port 80" # Starts the FastAPI application
-
-[service]
-  name = "TodoApp2"
-  ports = [80] # The port specified in Dockerfile
+  # Set the directory where the app code is located
+  directory = "TodoApp2"
