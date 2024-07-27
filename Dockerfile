@@ -5,13 +5,13 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy requirements.txt from TodoApp2
-COPY TodoApp2/requirements.txt /app/requirements.txt
+COPY ./TodoApp2/requirements.txt /app/requirements.txt
 
 # Install dependencies
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Copy the rest of the application
-COPY . /app
+# Copy the rest of the application from TodoApp2
+COPY ./TodoApp2 /app
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
