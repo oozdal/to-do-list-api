@@ -125,7 +125,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./TodoApp2/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ozerozdal/todolist-app:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
@@ -177,7 +177,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: .Dockerfile
+          file: ./Dockerfile
           push: true
           tags: quay.io/ozerozdal/${{ env.IMAGE_NAME }}:${{ steps.image_tags.outputs.IMAGE_TAGS }}
           cache-from: type=gha
