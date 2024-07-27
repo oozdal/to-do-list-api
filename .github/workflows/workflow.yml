@@ -55,6 +55,9 @@ jobs:
             pip install -r TodoApp1/requirements.txt
               
         - name: Run tests
+          env:
+            SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            ALGORITHM: ${{ secrets.ALGORITHM }}
           run: |
             python -m pytest TodoApp1/test
 
