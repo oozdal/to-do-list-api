@@ -4,8 +4,8 @@ FROM python:3.10-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy requirements.txt from TodoList2
-COPY TodoList2/requirements.txt /app/requirements.txt
+# Copy requirements.txt from TodoApp2
+COPY TodoApp2/requirements.txt /app/requirements.txt
 
 # Install dependencies
 RUN pip install --no-cache-dir -r /app/requirements.txt
