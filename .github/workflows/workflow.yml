@@ -14,8 +14,8 @@ on:
       - '*'
     types: [ closed, opened, synchronize, reopened ]
   
-  #schedule:
-  #  - cron: '0 0 * * 0' # Run every Sunday at 00:00
+  schedule:
+    - cron: '0 21 * * SAT' # Run every Saturday at 21:00 PM UTC
     
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -57,3 +57,193 @@ jobs:
         - name: Run tests
           run: |
             python -m pytest TodoApp1/test
+
+  job2:
+    needs: job1
+
+    # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    name: "Build and Push to DockerHub"
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || ( github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref != 'main' ) # this job will only run if the PR has been merged from dev branchs
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Clean unnecessary files to save space
+        run: |
+          docker rmi $(docker images -q)
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
+          sudo apt -y autoremove --purge
+          sudo apt -y autoclean
+          sudo apt clean
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+          df -h
+
+          - name: Checkout
+          uses: actions/checkout@v2
+             
+      - name: Login to Docker Hub
+        id: login-dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+          
+      - name: Get a docker image tag for DockerHub
+        env:
+          REGISTRY: ${{ steps.login-dockerhub.outputs.registry }}
+          REPOSITORY: todolist-app
+          IMAGE_TAG: latest
+        run: |
+            echo "docker_image=$REGISTRY/$REPOSITORY" > $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.docker_image }}
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+            type=ref,event=pr
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+
+      - name: Build, Tag, and Push The Docker Image to Docker Hub
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./TodoApp2/Dockerfile
+          push: true
+          tags: ozerozdal/todolist-app:latest
+          labels: ${{ steps.docker_meta.outputs.labels }}
+
+  job3:
+    needs: job1
+
+    # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    name: "Build and Push to GHCR"
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || ( github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref != 'main' ) # this job will only run if the PR has been merged from dev branchs
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Clean unnecessary files to save disk space
+      - name: clean unncessary files to save space
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/sudo apt/sources.list.d
+          sudo apt -y autoremove --purge
+          sudo apt -y autoclean
+          sudo apt clean
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+          df -h          
+
+      # Free up disk space on Ubuntu
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
+          tool-cache: false
+          large-packages: true
+          swap-storage: true
+
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-WeekNo%U')"
+
+      - name: Get tag
+        id: repository
+        run: echo "tag=$(git describe --tags --always)" > $GITHUB_ENV
+
+      - name: Log into the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./TodoApp2/Dockerfile
+          push: true
+          #tags: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.tag }}
+          #tags: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.date.outputs.date }}
+          tags: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
+
+  job4:
+    needs: job1
+
+    # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    name: "Build and Push to ReadHat Quay"
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || ( github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref != 'main' ) # this job will only run if the PR has been merged from dev branchs
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-WeekNo%U')"
+
+      - name: Get image tags
+        id: image_tags
+        run: |
+          echo -n ::set-output name=IMAGE_TAGS::
+          VERSION=$(jq -r '.version' ${context}/version.json)
+          TAGS=('latest')
+          if [ "${VERSION}" ] && [ "${VERSION}" != "latest" ]; then
+              TAGS+=("${VERSION}")
+          fi
+          if [[ "${GITHUB_REF}" =~ refs/tags/(.*) ]]; then
+              TAGS+=("git-${BASH_REMATCH[1]}")
+          fi
+          ( IFS=$','; echo "${TAGS[*]}" )
+          
+      - name: Docker quay.io Login
+        env:
+          DOCKER_USER: ${{secrets.REGISTRY_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.REGISTRY_PASSWORD}}
+        run: |
+          docker login quay.io -u $DOCKER_USER -p $DOCKER_PASSWORD
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./TodoApp2/Dockerfile
+          push: true
+          tags: quay.io/ozerozdal/${{ env.IMAGE_NAME }}:${{ steps.image_tags.outputs.IMAGE_TAGS }}
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
+
