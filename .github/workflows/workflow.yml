@@ -1,5 +1,5 @@
-# This workflow runs automatically every Sunday at 00:00 UTC and creates a conda cache for the week.
-# In addition, it runs on every push and pull request to main. It skips update dependencies step if cache exists.
+# This workflow runs automatically every Saturday at 21:00 PM UTC
+# In addition, it runs on every push and pull request to main.
 
 name: tests
 
