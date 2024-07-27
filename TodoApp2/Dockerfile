@@ -8,7 +8,7 @@ WORKDIR /TodoList2
 COPY . /TodoList2
 
 # Install any needed dependencies specified in requirements.txt
-RUN pip install --no-cache-dir -r TodoList2/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
